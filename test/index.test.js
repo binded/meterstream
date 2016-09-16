@@ -38,16 +38,15 @@ test('exactly max size', (t) => {
     }))
 })
 
-// TODO: make sure exactly all data is pushed up to max size before
-// emitting error?
 test('max size exceeded after 1 chunk', (t) => {
-  const rs = arrToReadStream([Buffer.alloc(101)])
+  const rs = arrToReadStream([Buffer.from('12345678')])
   const chunks = []
-  rs.pipe(new MeterStream(100))
+  rs.pipe(new MeterStream(5))
     .on('error', (err) => {
       t.ok(err instanceof MeterStream.OverflowError)
       const buf = Buffer.concat(chunks)
-      t.equal(buf.length, 0)
+      t.equal(buf.toString(), '12345')
+      t.equal(buf.length, 5)
       t.end()
     })
     .on('data', (chunk) => chunks.push(chunk))

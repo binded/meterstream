@@ -5,10 +5,9 @@
 Transform stream that emits a `MeterStream.OverflowError` error if it has
 read more than `maxBytes` bytes.
 
-Note: the readable side of the transform will likely emit less than
-`maxBytes` of data if the OverflowError is thrown. That's because
-Node.js transform streams can't both push data and emit an error
-(afaik).
+Note: if more than `maxBytes` is read, the transform will ensure that
+exactly `maxBytes` have been flushed to the readable side before
+emitting the OverflowError.
 
 ## Install
 
@@ -31,22 +30,18 @@ See [./test](./test) directory for usage examples.
 import MeterStream from 'meterstream'
 
 process.stdin
-  .pipe(new MeterStream(15))
+  .pipe(new MeterStream(5))
   .on('error', (err) => {
-    console.error('Read more than 15 bytes from stdin')
+    console.error('Read more than 5 bytes from stdin')
     console.error(err)
     process.exit(1)
   })
   .pipe(process.stdout)
 
 
-// $ babel-node src/demo.js
-// hello
-// hello
-// have we
-// have we
-// reached 15 bytes yet?
-// Read more than 15 bytes from stdin
-// Error: Stream exceeded specified max of 15 bytes.
-//     at OverflowError ...
+// echo -n "123456789" | babel-node src/demo.js
+// 12345Read more than 5 bytes from stdin
+// Error: Stream exceeded specified max of 5 bytes.
+//     at OverflowError (...)
+//     at ....
 ```

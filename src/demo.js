@@ -2,9 +2,9 @@
 import MeterStream from './'
 
 process.stdin
-  .pipe(new MeterStream(15))
+  .pipe(new MeterStream(5))
   .on('error', (err) => {
-    console.error('Read more than 15 bytes from stdin')
+    console.error('Read more than 5 bytes from stdin')
     console.error(err)
     process.exit(1)
   })
