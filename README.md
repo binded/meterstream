@@ -6,8 +6,9 @@ Transform stream that emits a `MeterStream.OverflowError` error if it has
 read more than `maxBytes` bytes.
 
 Note: the readable side of the transform will likely emit less than
-`maxBytes` if the OverflowError is thrown because it can't both push the
-remaining data and emit an error.
+`maxBytes` of data if the OverflowError is thrown. That's because
+Node.js transform streams can't both push data and emit an error
+(afaik).
 
 ## Install
 
